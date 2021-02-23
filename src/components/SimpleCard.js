@@ -49,7 +49,7 @@ export default function SimpleCard({
     <Card className={classes.root}>
       <CardMedia
         className={classes.media}
-        image={`/nfts/${nftInfo.img}`}
+        image={`./nfts/${nftInfo.img}`}
         title="nft thumbnail"
       />
       <CardContent>

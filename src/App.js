@@ -397,7 +397,7 @@ function App() {
                 maxHeight: "30rem",
                 margin: "auto",
               }}
-              src={`/nfts/${selectedNFTInfo.img}`}
+              src={`./nfts/${selectedNFTInfo.img}`}
             />
           </Grid>
         </Grid>
