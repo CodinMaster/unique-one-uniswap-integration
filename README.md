@@ -1,5 +1,8 @@
-# Unique.One DEX Integration
-Use 0x DEX Aggregator to allow user to buy NFTs from Unique.One marketplace using any Token of their choice.
+# Unique.One Uniswap Integration
+Use Uniswap pools to allow user to buy NFTs from Unique.One marketplace using any Token of their choice.
+
+### LIVE RINKEBY DEMO: [Link](https://apoorvlathey.com/projects/unique-one-uniswap-integration/)
+### VIDEO DEMO: [Link](https://www.youtube.com/watch?v=m08Br1dDh54)
 
 ## Setup
 
@@ -8,20 +11,41 @@ Use 0x DEX Aggregator to allow user to buy NFTs from Unique.One marketplace usin
 2. `npm run start` to preview application.
 
 ### Smart Contracts:
-1. `cd Ethereum` Smart Contracts + Tests are in Ethereum directory.
-2. `npm i` to install required openzeppelin dependencies.
-3. Create an .env file (.env.example provided for reference), and provide Ethereum Node url so that tests can execute on forked mainnet.
-4. `npm run compile` to compile all contracts.
-5. `npm run just-test` to run tests on forked mainnet with real 0x quote values.
+1. `cd Ethereum` Smart Contracts in Ethereum directory.
 
-#### Tests Output:
-![](https://i.imgur.com/yX3BIQK.png)
+* Already deployed on Rinkeby at: [0x7352d1DDDb09a2e3c5600C7c0a25cdd4d3a76a20](https://rinkeby.etherscan.io/address/0x7352d1dddb09a2e3c5600c7c0a25cdd4d3a76a20)
 
-#### Explanation:
-Currently, Unique.One only allows the users to buy NFTs using ETH. This solution enables them to transaction via any token of their choice.
-Say if a user holds DAI, then the best rate for conversion of DAI to ETH is found via 0x's API. It looks across various pools like Uniswap, Sushiswap, Curve, Balancer and more to find the trade with least slippage.
+#### Contract Functions:
 
-Our `UniqueOneDexHelper` contract takes the data outputed by API as input, and acts as a middlemen.
-- The user approves this Helper contract to spend their DAI.
-- The Helper contract takes this DAI, Swaps it to ETH, Buys the required NFT, and sends it to the user. All in one transaction!
-- There are also checks to refund any residue of ETH or Token, back to the user and only charge the required ETH for NFT.
+```solidity
+function buyERC721NFT(
+        address fromToken,          // input token address (like DAI, USDC, etc.)
+        uint256 maxFromAmount,      // max input token amount (used for slippage check during swap)
+        IERC721 nft, 
+        uint256 tokenId, 
+        uint256 price, 
+        uint256 sellerFee,
+        IERC721Sale.Sig calldata signature
+    ) external
+```
+
+```solidity
+function buyERC1155NFT(
+        address fromToken,        // input token address (like DAI, USDC, etc.)
+        uint256 maxFromAmount,    // max input token amount (used for slippage check during swap)
+        IERC1155 nft, 
+        uint256 tokenId,
+        address payable owner,
+        uint256 selling,
+        uint256 buying,
+        uint256 price, 
+        uint256 sellerFee,
+        IERC1155Sale.Sig calldata signature
+    ) external
+```
+
+### Flow:
+
+1. Approve contract to spend user's fromToken
+2. Call `buyERC721NFT` or `buyERC1155NFT` function
+3. Contract pulls the required `fromToken` amount from user, swaps it to ETH, buys NFT and sends the NFT back to the user, all in one transaction!
